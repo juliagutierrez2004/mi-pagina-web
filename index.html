@@ -119,7 +119,20 @@
                 kmInput.value = ""; // Limpiar el valor
             }
         });
-
+        // Cargar participantes desde LocalStorage
+        function loadParticipants() {
+            const storedData = localStorage.getItem("participants");
+            if (storedData) {
+                Object.assign(participants, JSON.parse(storedData));
+                updateRanking();
+            }
+        }
+        
+        // Guardar participantes en LocalStorage
+        function saveParticipants() {
+            localStorage.setItem("participants", JSON.stringify(participants));
+        }
+        
         // Actualizar ranking
         function updateRanking() {
             const sortedParticipants = Object.entries(participants)
@@ -128,18 +141,18 @@
                 .map(([name, points]) => `<li>${name}: ${points} puntos</li>`)
                 .join("");
         }
-
+        
         // Registrar actividad
         submitButton.addEventListener("click", function() {
             const name = document.getElementById("name").value;
             const activity = activitySelect.value;
             let points = 0;
-
+        
             if (!name || !activity) {
                 alert("Por favor, selecciona tu nombre y actividad.");
                 return;
             }
-
+        
             if (activity === "Gimnasio" || activity === "Correr") {
                 points = 4;
             } else if (activity === "Caminar") {
@@ -152,17 +165,23 @@
             } else if (activity === "Bicicleta") {
                 points = 2;
             }
-
+        
             // Sumar puntos al participante
             participants[name] += points;
-
-            // Actualizar ranking
+        
+            // Guardar en LocalStorage y actualizar ranking
+            saveParticipants();
             updateRanking();
-
+        
             // Confirmar registro
             alert(`${name} ha sumado ${points} puntos realizando ${activity}.`);
         });
-
+        
+        // Inicializar datos y ranking al cargar la página
+        loadParticipants();
+        
+                });
+        
         // Inicializar ranking
         updateRanking();
     </script>
